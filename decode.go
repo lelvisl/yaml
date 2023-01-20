@@ -324,7 +324,7 @@ type decoder struct {
 	aliasCount  int
 	aliasDepth  int
 
-	tagHandlers map[string]TagHandler
+	tagHandlers map[string]internalTagHandler
 
 	mergedFields map[interface{}]bool
 }
@@ -579,12 +579,18 @@ func (d *decoder) scalar(n *Node, out reflect.Value) bool {
 			}
 			resolved = string(data)
 		} else {
+
 			if th, ok := d.tagHandlers[tag]; ok {
-				hval, err := th(n.Value)
+				o, err := th.t(n.Value)
 				if err != nil {
 					fail(err)
 				}
-				tag, resolved = resolve("", hval)
+				if th.skipDefaultPath {
+					out.Set(reflect.ValueOf(o))
+					return true
+				}
+				tag, resolved = resolve("", o.(string))
+
 			}
 		}
 	}
