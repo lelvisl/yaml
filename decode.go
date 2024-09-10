@@ -345,7 +345,8 @@ func newDecoder() *decoder {
 		stringMapType:  stringMapType,
 		generalMapType: generalMapType,
 		uniqueKeys:     true,
-		tagResolvers:   map[string]TagResolver{},
+		tagResolvers:   make(map[string]TagResolver),
+		tagReplacers:   make(map[string]TagReplacer),
 	}
 	d.aliases = make(map[*Node]bool)
 	return d
